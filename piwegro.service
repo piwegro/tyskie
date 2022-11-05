@@ -1,0 +1,24 @@
+[Unit]
+Description=Piwegro docker compose service
+
+Requires=docker.service
+Wants=network.target
+After=syslog.target network.target remote-fs.target nss-lookup.target docker.service
+
+[Service]
+Type=simple
+WorkingDirectory=/srv
+User=debian
+
+Restart=on-failure
+RestartSec=10
+StartLimitBurst=5
+StartLimitIntervalSec=600
+
+ExecStartPre=/usr/bin/docker compose pull
+ExecStart=/usr/bin/docker compose up --force-recreate --remove-orphans
+
+ExecStop=/usr/bin/docker compose down
+
+[Install]
+WantedBy=multi-user.target
